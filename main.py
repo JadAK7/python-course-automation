@@ -1,3 +1,4 @@
+import csv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
@@ -51,4 +52,29 @@ campus.select_by_value("2")
 driver.find_element("xpath", "//input[@type='submit' and @value='Section Search']").send_keys(Keys.ENTER)
 
 
+with open('output.csv', 'w') as file:
+    
+    writer = csv.writer(file)
 
+    headers = ['Available', 'CRN', 'Course', 'Course number', 'Section', 'Campus', 'Credits', 'Title', 'Days', 'Time', 'Cap', 'Act', 'Rem', 'WL Cap', 'WL Act', 'WL Rem', 'XL Cap', 'XL Act', 'XL Rem', 'Instructor', 'Date', 'Location', 'Attribute']
+    
+    writer.writerow(headers)
+
+    table = driver.find_element("xpath", "//table[@class='datadisplaytable']")
+    
+    rows = table.find_elements("tag name", "tr")[1:]
+
+    for i in range(len(rows)):
+        if i < 7:
+            continue
+        else:
+            cols = rows[i].find_elements("tag name", "td")
+            row_buffer = []
+            for col in cols:
+                row_buffer.append(col.text.strip()+"\t")
+            if len(row_buffer) > 0:
+                writer.writerow(row_buffer)
+
+
+driver.close()
+        
